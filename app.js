@@ -1,4 +1,5 @@
 const express = require('express')
+const mysql = require('mysql2')
 
 const app = express()
 
@@ -11,6 +12,14 @@ app.use(express.urlencoded({extended: true}))
 function homePage (req, res){
     res.send("Welcome to Homepage")
 }
+
+const connection = mysql.createConnection({
+    host: "localhost",
+    port: "3306",
+    user: "root",
+    password: "Sameer@123",
+    database: "development"
+})
 
 app.get('/', homePage )
 
@@ -27,19 +36,40 @@ app.get('/user/:userId', (req, res) => {
     res.send(object)
 } )
 
-app.post('/signup', (req, res) => {
+
+function handleDatabaseResult (err, result, metadata, res){
+    if(err){
+        console.log("Database main error")
+    }
+    else{
+        if(result.length==0){
+            
+        }
+        console.log("DATABASE RESULT", result);
+    }
+}
+
+app.post('/signup', async(req, res) => {
 
     const body = req.body;
+    const email = body.email;
+    const password = body.password;
 
-    
+    connection.query(
+        `SELECT user_id FROM users WHERE email="${email}"`, (err, result, fields) => {
+            if(result.length === 0){
+                res.send("No user found you can signup, email: "+email+" password: "+password)
+            }
+            else{
+                res.send("User exists go login")
+            }
+        }
+    );
 
-    res.send("<h1>You are signed up</h1>")
 })
 
 
 app.listen(8080, () => {
     console.log("Server is listening...")
 })
-
-
 
