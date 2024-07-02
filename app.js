@@ -36,25 +36,12 @@ app.get('/user/:userId', (req, res) => {
     res.send(object)
 } )
 
-
-function handleDatabaseResult (err, result, metadata, res){
-    if(err){
-        console.log("Database main error")
-    }
-    else{
-        if(result.length==0){
-            
-        }
-        console.log("DATABASE RESULT", result);
-    }
-}
-
 app.post('/signup', async(req, res) => {
 
     const body = req.body;
     const email = body.email;
     const password = body.password;
-
+    
     connection.query(
         `SELECT user_id FROM users WHERE email="${email}"`, (err, result, fields) => {
             if(result.length === 0){
