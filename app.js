@@ -21,7 +21,7 @@ const connection = mysql.createConnection({
     host: "localhost",
     port: "3306",
     user: "root",
-    password: "Sameer@123",
+    password: "Amar@123",
     database: "development"
 })
 
@@ -133,10 +133,53 @@ app.post('/login', async(req, res) =>{
 
 //{
 //    "email": "testUser@gmail.com",
-//1    "newEmail": "newmail@gmail.com"
-//1}
-app.post('/change-email', ) //for amar
+//1    "newEmail": "newmail@gmail.com",
+//      "password": 
 
+//1}
+//
+app.post('/change-email',async(req, res) =>{
+    const body=req.body
+    const email=body.email
+    const new_email=body.new_email
+    const password=body.password
+
+    connection.query( `SELECT user_id FROM users WHERE email="${email}"`, async (err, result, fields) => {
+        if(result.length == 0){
+            console.log("No user found you can signup, email: "+email+" password: "+password)
+            res.status(400).send({
+                "STATUS":"FAILED",
+                "MESSAGE":"Email not Found, Please create account first"
+            })
+        }
+        //get password from DB
+        //compare
+        else{
+            connection.query( `SELECT password FROM users WHERE email="${email}"`, async (err, result, fields) => {
+                console.log(result)
+                const pwd=result[0].password
+                bcrypt.compare(password, pwd, function(err, result) {
+                    if(result==true){
+                       console.log("loggedin")
+                        connection.query( `UPDATE users SET email="${new_email}" where  email="${email}"`, async (err, result, fields) => {
+                        console.log(result)
+                                res.status(200).send({
+                                    "STATUS":"SUCCESS",
+                                    "MESSAGE":"EMAIL CHANGED SUCCESSFULLY"
+                                })
+                        })
+                    }
+                    else{
+                        res.status(403).send({
+                            "STATUS":"FAILED",
+                            "MESSAGE":"PASSWORD ENTERED IS WRONG"
+                        })
+                    }
+                })
+            })
+        }
+    })//for amar
+})
 app.post('/reset-password') //for sameer
 
 
