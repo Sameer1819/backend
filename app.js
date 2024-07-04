@@ -38,11 +38,20 @@ app.use((req, res, next) => {
             next()
         }
     }
+    else{
+        next()
+    }
 })
 
 
 
-app.get('/', homePage )
+app.get('/', (req, res) => {
+    res.send("aloooo")
+} )
+
+app.post("/test", (req, res) => {
+    res.status(200).send("yooooo")
+})
 
 app.get('/user/:userId', (req, res) => {
 
